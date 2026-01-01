@@ -34,7 +34,7 @@
                 return redirect()->route('login');
             }
 
-            // 2. Logic Enroll (Simpan ke Database)
+            // 2. Logic Enroll (Simpan ke Database jika belum ada)
             if (! $this->isEnrolled) {
                 Enrollment::create([
                     'user_id'      => Auth::id(),
@@ -47,10 +47,11 @@
             $firstLesson = $this->course->modules->first()?->lessons->first();
 
             if ($firstLesson) {
-                // Redirect ke Learning Player
+                // PERBAIKAN DI SINI:
+                // Sesuaikan nama parameter dengan routes/web.php ('courseSlug' dan 'lessonId')
                 return redirect()->route('learning.player', [
-                    'course' => $this->course->slug,
-                    'lesson' => $firstLesson->id,
+                    'courseSlug' => $this->course->slug,
+                    'lessonId'   => $firstLesson->id,
                 ]);
             } else {
                 // Fallback jika belum ada materi
@@ -58,6 +59,7 @@
             }
         }
 }?>
+
 <div class="min-h-screen bg-slate-50 font-[Poppins] pt-28 pb-20">
 
     <div class="absolute top-0 left-0 w-full h-[500px] bg-gradient-to-b from-indigo-50 to-slate-50 -z-10"></div>
@@ -94,8 +96,7 @@
             <div class="bg-white rounded-[2rem] p-8 border border-slate-100 shadow-sm mb-8">
                 <h3 class="text-xl font-bold text-slate-800 mb-6">Tentang Kursus</h3>
                 <div class="prose prose-slate prose-sm max-w-none text-slate-500">
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.</p>
-                    <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident.</p>
+                    {!! nl2br(e($course->description)) !!}
                 </div>
             </div>
 

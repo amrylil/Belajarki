@@ -53,8 +53,8 @@ class Show extends Component
 
         if ($firstLesson) {
             return redirect()->route('learning.player', [
-                'course' => $this->course->slug,
-                'lesson' => $firstLesson->id,
+                'courseSlug' => $this->course->slug,
+                'lessonId'   => $firstLesson->id,
             ]);
         } else {
             // Jaga-jaga kalau course belum ada materinya

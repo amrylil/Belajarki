@@ -6,19 +6,19 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('courses', function (Blueprint $table) {
             $table->uuid('id')->primary();
 
-            // Relasi UUID ke users & categories
             $table->foreignUuid('category_id')->constrained('categories')->onDelete('cascade');
 
             $table->string('title');
             $table->string('slug')->unique();
+
+            // KOLOM BARU: Deskripsi (Text agar muat banyak)
+            $table->text('description')->nullable();
+
             $table->string('thumbnail')->nullable();
             $table->unsignedBigInteger('price')->default(0);
             $table->enum('level', ['beginner', 'intermediate', 'advanced'])->default('beginner');
@@ -28,9 +28,6 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('courses');

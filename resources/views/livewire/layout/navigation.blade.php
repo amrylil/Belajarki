@@ -13,20 +13,33 @@
 }; ?>
 
 <div class="fixed top-6 left-0 right-0 z-50 flex justify-center px-4">
-    <nav class="w-full max-w-5xl bg-white/70 backdrop-blur-md border border-white/50 rounded-full px-6 py-3 shadow-sm flex items-center justify-between">
+    <nav class="w-full max-w-7xl bg-white/70 backdrop-blur-md border border-white/50 rounded-full px-6 py-3 shadow-sm flex items-center justify-between">
 
         <div class="flex items-center gap-8">
-            <a href="/" wire:navigate class="text-xl font-bold text-slate-800">
-                Logo
+            <a href="/" wire:navigate class="text-xl font-bold text-slate-800 tracking-tight">
+                Belajarki<span class="text-indigo-600">.</span>
             </a>
 
             <div class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-500">
-                <a href="/" wire:navigate class="text-slate-900 font-semibold">Beranda</a>
-                <button class="hover:text-slate-900 transition flex items-center gap-1 cursor-pointer">
-                    Kursus <span class="text-[10px]">▼</span>
-                </button>
-                <a href="#" class="hover:text-slate-900 transition">Kategori</a>
-                <a href="#" class="hover:text-slate-900 transition">Tentang</a>
+                {{-- Menggunakan request()->routeIs() untuk menandai menu aktif --}}
+                <a href="{{ route('home') }}" wire:navigate
+                   class="transition hover:text-indigo-600 {{ request()->routeIs('home') ? 'text-slate-900 font-bold' : '' }}">
+                    Beranda
+                </a>
+
+                <a href="{{ route('courses.index') }}" wire:navigate
+                   class="transition hover:text-indigo-600 {{ request()->routeIs('courses.*') ? 'text-slate-900 font-bold' : '' }}">
+                    Kursus
+                </a>
+
+  <a href="{{ route('category.index') }}" wire:navigate
+   class="transition hover:text-indigo-600 {{ request()->routeIs('category.index') ? 'text-slate-900 font-bold' : '' }}">
+   Kategori
+</a>
+                <a href="{{ route('about') }}" wire:navigate
+   class="transition hover:text-indigo-600 {{ request()->routeIs('about') ? 'text-slate-900 font-bold' : '' }}">
+   Tentang
+</a>
             </div>
         </div>
 
@@ -40,7 +53,7 @@
 
             @auth
                 <div class="flex items-center gap-3 pl-2 border-l border-slate-200">
-                    <a href="{{ url('/dashboard') }}" wire:navigate class="text-sm font-bold text-slate-700 hover:text-indigo-600">
+                    <a href="{{ route('dashboard') }}" wire:navigate class="text-sm font-bold text-slate-700 hover:text-indigo-600">
                         Dashboard
                     </a>
 
@@ -51,7 +64,7 @@
                     <div class="relative ml-1">
                         <img src="https://ui-avatars.com/api/?name={{ auth()->user()?->name }}&background=random"
                              class="w-8 h-8 rounded-full border border-slate-300 shadow-sm"
-                             alt="{{ auth()->user()?->name ?? 'User' }}">
+                             alt="{{ auth()->user()?->name }}">
                     </div>
                 </div>
             @else

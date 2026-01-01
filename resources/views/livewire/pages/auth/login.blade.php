@@ -14,7 +14,7 @@
             $this->validate();
             $this->form->authenticate();
             Session::regenerate();
-            $this->redirectIntended(default: route('dashboard'), navigate: true);
+            $this->redirectIntended(default: route('home'), navigate: true);
         }
 }?>
 

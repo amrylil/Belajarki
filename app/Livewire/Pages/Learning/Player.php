@@ -2,65 +2,62 @@
 namespace App\Livewire\Pages\Learning;
 
 use App\Models\Course;
-use App\Models\Enrollment;
 use App\Models\Lesson;
-use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 
-// Kita pakai layout kosong/khusus biar fokus belajar (opsional)
 #[Layout('layouts.app')]
 class Player extends Component
 {
-    public Course $course;
-    public Lesson $currentLesson;
+    public $courseData;
+    public $lessonData;
 
-    public $previousLessonId = null;
-    public $nextLessonId     = null;
+    public $nextLessonId = null;
+    public $prevLessonId = null;
 
-    public function mount($course, $lesson)
+    // TERIMA PARAMETER DENGAN NAMA BARU
+    public function mount($courseSlug, $lessonId)
     {
-        // 1. Ambil Data Course & Syllabus
-        $this->course = Course::with(['modules.lessons'])
-            ->where('slug', $course)
+        // Debugging (Sekarang pasti muncul karena Laravel tidak mencegat lagi)
+        // dd($courseSlug, $lessonId);
+
+        // 1. Cari Course Manual berdasarkan SLUG
+        $this->courseData = Course::with(['modules.lessons'])
+            ->where('slug', $courseSlug)
             ->firstOrFail();
 
-        // 2. CEK KEAMANAN: Apakah user sudah enroll?
-        $hasAccess = Enrollment::where('user_id', Auth::id())
-            ->where('course_id', $this->course->id)
-            ->exists();
+        // 2. Cari Lesson Manual berdasarkan ID
+        $this->lessonData = Lesson::where('id', $lessonId)->firstOrFail();
 
-        if (! $hasAccess) {
-            abort(403, 'Anda belum mendaftar di kursus ini.');
-        }
-
-        // 3. Ambil Lesson yang sedang dibuka
-        $this->currentLesson = Lesson::where('id', $lesson)->firstOrFail();
-
-        // 4. Setup Navigasi (Next/Prev Button)
+        // 3. Setup Navigasi
         $this->setupNavigation();
     }
 
     public function setupNavigation()
     {
-        // Ambil semua lesson dalam course ini, urutkan sesuai modul & sort lesson
-        // Ini teknik "Flatten" collection biar jadi satu list panjang
-        $allLessons = $this->course->modules->flatMap(function ($module) {
-            return $module->lessons;
-        });
+        $allLessons   = $this->courseData->modules->flatMap->lessons;
+        $currentIndex = $allLessons->search(fn($l) => $l->id === $this->lessonData->id);
 
-        // Cari index lesson saat ini
-        $currentIndex = $allLessons->search(function ($item) {
-            return $item->id === $this->currentLesson->id;
-        });
+        if ($currentIndex !== false) {
+            $this->prevLessonId = $currentIndex > 0 ? $allLessons[$currentIndex - 1]->id : null;
+            $this->nextLessonId = $currentIndex < $allLessons->count() - 1 ? $allLessons[$currentIndex + 1]->id : null;
+        }
+    }
 
-        // Tentukan ID lesson sebelum dan sesudahnya
-        $this->previousLessonId = ($currentIndex > 0) ? $allLessons[$currentIndex - 1]->id : null;
-        $this->nextLessonId     = ($currentIndex < $allLessons->count() - 1) ? $allLessons[$currentIndex + 1]->id : null;
+    public function goToLesson($targetLessonId)
+    {
+        // Redirect harus sesuai nama parameter di web.php
+        return redirect()->route('learning.player', [
+            'courseSlug' => $this->courseData->slug, // Sesuaikan key
+            'lessonId'   => $targetLessonId,         // Sesuaikan key
+        ]);
     }
 
     public function render()
     {
-        return view('livewire.pages.learning.player');
+        return view('livewire.pages.learning.player', [
+            'course'        => $this->courseData,
+            'currentLesson' => $this->lessonData,
+        ]);
     }
 }
