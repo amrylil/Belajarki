@@ -7,7 +7,7 @@ services:
     image: ulilamry/belajarki:latest
     container_name: belajarki-app
     restart: always
-    env_file: .env # Baca env dari VPS
+    env_file: ../.env
     volumes:
       # Kita share folder public agar Nginx bisa baca file CSS/JS
       - web-static:/var/www/public
