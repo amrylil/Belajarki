@@ -1,0 +1,31 @@
+version: "3.8"
+
+services:
+  # Service App (Laravel)
+  app:
+    # Ganti 'username-dockerhub' dengan username kamu
+    image: username-dockerhub/belajarki:latest
+    container_name: belajarki-app
+    restart: always
+    env_file: .env # Baca env dari VPS
+    volumes:
+      # Kita share folder public agar Nginx bisa baca file CSS/JS
+      - web-static:/var/www/public
+
+  # Service Web Server (Nginx)
+  web:
+    image: nginx:alpine
+    container_name: belajarki-nginx
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      # Ambil file public dari volume shared
+      - web-static:/var/www/public
+      # Config Nginx (Diambil dari repo yang di-pull di VPS)
+      - ./development/nginx/conf.d/:/etc/nginx/conf.d/
+    depends_on:
+      - app
+
+volumes:
+  web-static:
