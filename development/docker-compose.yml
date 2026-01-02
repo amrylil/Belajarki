@@ -1,31 +1,49 @@
 version: "3.8"
 
 services:
-  # Service App (Laravel)
   app:
-    # Ganti 'username-dockerhub' dengan username kamu
     image: ulilamry/belajarki:latest
     container_name: belajarki-app
     restart: always
     env_file: ../.env
     volumes:
-      # Kita share folder public agar Nginx bisa baca file CSS/JS
       - web-static:/var/www/public
+    networks:
+      - belajarki-network
 
-  # Service Web Server (Nginx)
   web:
     image: nginx:alpine
     container_name: belajarki-nginx
     restart: always
     ports:
       - "80:80"
+      - "443:443" # <--- BARU: Buka port HTTPS
     volumes:
-      # Ambil file public dari volume shared
       - web-static:/var/www/public
-      # Config Nginx (Diambil dari repo yang di-pull di VPS)
       - ./nginx/conf.d/:/etc/nginx/conf.d/
+      - certbot-www:/var/www/certbot # <--- BARU: Folder Verifikasi
+      - certbot-conf:/etc/letsencrypt # <--- BARU: Tempat Sertifikat disimpan
     depends_on:
       - app
+    networks:
+      - belajarki-network
 
+  # --- SERVICE BARU ---
+  certbot:
+    image: certbot/certbot
+    container_name: belajarki-certbot
+    volumes:
+      - certbot-www:/var/www/certbot
+      - certbot-conf:/etc/letsencrypt
+    networks:
+      - belajarki-network
+
+networks:
+  belajarki-network:
+    driver: bridge
+
+# --- VOLUME BARU ---
 volumes:
   web-static:
+  certbot-www:
+  certbot-conf:
