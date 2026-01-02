@@ -23,7 +23,7 @@ services:
       # Ambil file public dari volume shared
       - web-static:/var/www/public
       # Config Nginx (Diambil dari repo yang di-pull di VPS)
-      - ./development/nginx/conf.d/:/etc/nginx/conf.d/
+      - ./nginx/conf.d/:/etc/nginx/conf.d/
     depends_on:
       - app
 
