@@ -4,7 +4,7 @@ services:
   # Service App (Laravel)
   app:
     # Ganti 'username-dockerhub' dengan username kamu
-    image: username-dockerhub/belajarki:latest
+    image: ulilamry/belajarki:latest
     container_name: belajarki-app
     restart: always
     env_file: .env # Baca env dari VPS

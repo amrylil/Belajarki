@@ -40,7 +40,7 @@ jobs:
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
             # 1. Masuk ke folder project
-            cd /var/www/belajarki
+            cd /var/www/Belajarki
 
             # 2. Update file docker-compose.yml dari repo
             git pull origin main
