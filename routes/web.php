@@ -11,6 +11,7 @@ use App\Livewire\Pages\Admin\User\StudentIndex;
 use App\Livewire\Pages\Course\Index as CourseIndex;
 use App\Livewire\Pages\Course\Show as CourseShow;
 use App\Livewire\Pages\Learning\Player as LearningPlayer;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
@@ -19,6 +20,11 @@ Volt::route('/', 'pages.home')->name('home');
 Volt::route('/kategori', 'pages.category.index')->name('category.index');
 Volt::route('/tentang', 'pages.about')->name('about');
 
+Route::get('/fix-storage', function () {
+    // Menjalankan perintah storage:link lewat kode
+    Artisan::call('storage:link');
+    return 'Storage Link Berhasil Dibuat! Cek website Anda.';
+});
 // Route List Course (Public)
 Route::get('/courses', CourseIndex::class)->name('courses.index');
 // Route Detail Course (Public)
