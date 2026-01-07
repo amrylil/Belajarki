@@ -14,9 +14,18 @@
             $this->validate();
             $this->form->authenticate();
             Session::regenerate();
-            $this->redirectIntended(default: route('home'), navigate: true);
+
+            // --- LOGIC REDIRECT BERDASARKAN ROLE ---
+            if (auth()->user()->role === 'admin') {
+                // Jika Admin -> ke Admin Dashboard
+                $this->redirectIntended(default: route('admin.dashboard'), navigate: true);
+            } else {
+                // Jika Student -> ke Home
+                $this->redirectIntended(default: route('home'), navigate: true);
+            }
         }
-}?>
+    }
+?>
 
 <div>
     <x-auth-session-status class="mb-4" :status="session('status')" />
